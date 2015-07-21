@@ -1,0 +1,6 @@
+.DS_Store
+.idea/shelf
+out
+tmp
+workspace.xml
+*.versionsBackup
