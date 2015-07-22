@@ -4,13 +4,13 @@ class In<in I>
 class Out<out O>
 class Inv<T>
 
-open class Inv1<T>: Inv2<T>()
-open class Inv2<T>
+open class Inv1<T>
+open class Inv2<T> : Inv1<T>()
 
-fun <X> inv1(x: X): Inv1<X> = null!!
-fun <Y> inv2(y: Y): In<Inv2<Y>> = null!!
+fun <X> inv1(x: X): In<Inv1<X>> = null!!
+fun <Y> inv2(y: Y): Inv2<Y> = null!!
 
-fun <T> bar(t: T, inT: In<T> ): Inv<T> = null!!
+fun <T> bar(t: In<T>, inT: T): Inv<T> = null!!
 
 fun test() {
     bar(inv1(2), inv2("")) // type inference failed
@@ -20,14 +20,16 @@ fun test() {
 
     bar<Inv1<Comparable<Nothing>>>(inv1<Comparable<Nothing>>(2), inv2<Comparable<Nothing>>(""))
     bar<Inv2<Comparable<Nothing>>>(inv1<Comparable<Nothing>>(2), inv2<Comparable<Nothing>>(""))
+
+    val a: Inv<in Inv2<in Int>> = bar(inv1(2), inv2(""))
 }
 
 /*
 return type: Inv<T>
 
 constrains:
-T <: Inv2<X>
-T >: Inv1<Y>
+T <: Inv1<X>
+T >: Inv2<Y>
 X >: Int
 Y >: String
 
